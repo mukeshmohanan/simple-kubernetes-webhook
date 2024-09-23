@@ -1,0 +1,80 @@
+import java.util.Map;
+
+public class CertEnrollmentRequest {
+    private String clientref;
+    private String change;
+    private String task;
+    private String csrData;
+    private String certtype;
+    private String certformat;
+    private Map<String, String> metadata;
+
+    // Constructor
+    public CertEnrollmentRequest(String clientref, String change, String task, String csrData, 
+                                 String certtype, String certformat, Map<String, String> metadata) {
+        this.clientref = clientref;
+        this.change = change;
+        this.task = task;
+        this.csrData = csrData;
+        this.certtype = certtype;
+        this.certformat = certformat;
+        this.metadata = metadata;
+    }
+
+    // Getters and Setters for each field
+    public String getClientref() {
+        return clientref;
+    }
+
+    public void setClientref(String clientref) {
+        this.clientref = clientref;
+    }
+
+    public String getChange() {
+        return change;
+    }
+
+    public void setChange(String change) {
+        this.change = change;
+    }
+
+    public String getTask() {
+        return task;
+    }
+
+    public void setTask(String task) {
+        this.task = task;
+    }
+
+    public String getCsrData() {
+        return csrData;
+    }
+
+    public void setCsrData(String csrData) {
+        this.csrData = csrData;
+    }
+
+    public String getCerttype() {
+        return certtype;
+    }
+
+    public void setCerttype(String certtype) {
+        this.certtype = certtype;
+    }
+
+    public String getCertformat() {
+        return certformat;
+    }
+
+    public void setCertformat(String certformat) {
+        this.certformat = certformat;
+    }
+
+    public Map<String, String> getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Map<String, String> metadata) {
+        this.metadata = metadata;
+    }
+}
