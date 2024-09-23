@@ -1,0 +1,36 @@
+import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.operator.ContentSigner;
+import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
+import org.bouncycastle.pkcs.PKCS10CertificationRequest;
+import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequestBuilder;
+
+import java.security.*;
+import java.util.UUID;
+
+public class CSRGenerator {
+
+    // Method to generate a random CN (Common Name)
+    public static String getRandomCN() {
+        return "CN=" + UUID.randomUUID().toString();
+    }
+
+    // Method to generate a KeyPair (RSA)
+    public static KeyPair generateKeyPair(int keySize) throws NoSuchAlgorithmException {
+        KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+        keyGen.initialize(keySize);
+        return keyGen.generateKeyPair();
+    }
+
+    // Method to generate CSR
+    public static String generateCSR(KeyPair keyPair, String subjectName) throws Exception {
+        X500Name x500Name = new X500Name(subjectName);
+        JcaPKCS10CertificationRequestBuilder csrBuilder = new JcaPKCS10CertificationRequestBuilder(x500Name, keyPair.getPublic());
+
+        // Use SHA256 with RSA for signing
+        ContentSigner signer = new JcaContentSignerBuilder("SHA256withRSA").build(keyPair.getPrivate());
+        PKCS10CertificationRequest csr = csrBuilder.build(signer);
+
+        // Return the CSR in PEM format
+        return new String(org.bouncycastle.util.io.pem.PemWriter.csrToPem(csr));  // Custom utility to output CSR in PEM format
+    }
+}
