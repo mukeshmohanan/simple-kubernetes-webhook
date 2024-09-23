@@ -1,0 +1,36 @@
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+
+public class EIDPClient {
+
+    public static String getToken() throws Exception {
+        String eidpUrl = "https://example.com/eidp/token";  // Replace with actual EIDP URL
+
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        HttpPost post = new HttpPost(eidpUrl);
+
+        // Set headers for the request (Add more if needed)
+        post.setHeader("Content-Type", "application/json");
+
+        // Set the request body
+        String jsonBody = "{\"client_id\":\"your-client-id\",\"client_secret\":\"your-secret\"}";
+        post.setEntity(new StringEntity(jsonBody));
+
+        // Execute the request
+        HttpResponse response = httpClient.execute(post);
+        String responseBody = EntityUtils.toString(response.getEntity());
+
+        // Extract and return the token from the response (assuming it's a JSON object)
+        // You can use Jackson or another library to parse the JSON response
+        return parseTokenFromResponse(responseBody);  // Implement this method to extract the token
+    }
+
+    private static String parseTokenFromResponse(String responseBody) {
+        // Implement JSON parsing logic here to extract the token
+        return "extracted_token";
+    }
+}
