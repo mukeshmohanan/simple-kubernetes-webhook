@@ -1,0 +1,19 @@
+import java.util.HashMap;
+import java.util.Map;
+
+public class Main {
+    public static void main(String[] args) throws Exception {
+        // Step 1: Generate a unique CN for the CSR
+        KeyPair keyPair = CSRGenerator.generateKeyPair(2048);
+        String randomCN = CSRGenerator.getRandomCN();
+        String csrData = CSRGenerator.generateCSR(keyPair, randomCN);
+
+        // Step 2: Get token from EIDP
+        String token = EIDPClient.getToken();
+
+        // Step 3: Create metadata map
+        Map<String, String> metadata = new HashMap<>();
+        metadata.put("id", "12345");
+        metadata.put("platform", "linux");
+
+        // Step 4: Create CertEnrollmentRequest object
