@@ -1,0 +1,1 @@
+String cleanPem = pemString.replaceAll("[^A-Za-z0-9+/=\\n\\r-]", "");
