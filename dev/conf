@@ -1,19 +1,12 @@
-openssl genpkey -algorithm RSA -out private_key.pem -pkeyopt rsa_keygen_bits:2048
+openssl genpkey -algorithm RSA-PSS -out private_key.pem \
+-pkeyopt rsa_keygen_bits:2048 \
+-pkeyopt rsa_pss_keygen_saltlen:-1
 
-openssl req -new -key private_key.pem -out csr.pem
-
-[default]
-openssl_conf = openssl_def
-
-[openssl_def]
-engines = engine_section
-
-[engine_section]
-# Add any engine settings here if necessary
 
 [req]
 distinguished_name = req_distinguished_name
-x509_extensions = v3_ca
+default_md = sha256
+string_mask = utf8only
 
 [req_distinguished_name]
 countryName = Country Name (2 letter code)
@@ -24,17 +17,18 @@ localityName = Locality Name (eg, city)
 localityName_default = San Francisco
 organizationName = Organization Name (eg, company)
 organizationName_default = My Company
-commonName = Common Name (e.g. server FQDN or YOUR name)
+commonName = Common Name (eg, YOUR name)
 commonName_max = 64
 
-[v3_ca]
-# Basic Constraints for CA
-basicConstraints = CA:TRUE
-
-# Signature Algorithm - RSASSA-PSS
-# PSS signature scheme settings
-[ v3_req ]
+[v3_req]
+# Specify basic constraints
 basicConstraints = CA:FALSE
-keyUsage = nonRepudiation, digitalSignature, keyEncipherment
 
-openssl x509 -req -in csr.pem -signkey private_key.pem -out cert.pem -days 365 -extfile openssl-pss.cnf -extensions v3_ca -sigopt rsa_padding_mode:pss -sigopt rsa_pss_saltlen:-1
+[pss]
+# Specify RSASSA-PSS signature scheme for CSR
+rsa_padding_mode = pss
+rsa_pss_saltlen = -1
+hashAlgorithm = sha256
+
+
+openssl req -new -key private_key.pem -out csr.pem -config openssl-pss.cnf -sigopt rsa_padding_mode:pss -sigopt rsa_pss_saltlen:-1
