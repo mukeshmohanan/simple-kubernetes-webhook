@@ -1,38 +1,40 @@
-cat > rsassapss.cnf <<EOF
-[default]
-openssl_conf = openssl_init
+openssl genpkey -algorithm RSA -out private_key.pem -pkeyopt rsa_keygen_bits:2048
 
-[openssl_init]
+openssl req -new -key private_key.pem -out csr.pem
+
+[default]
+openssl_conf = openssl_def
+
+[openssl_def]
 engines = engine_section
 
 [engine_section]
+# Add any engine settings here if necessary
 
 [req]
-default_md = sha256
-distinguished_name = dn
-req_extensions = req_ext
+distinguished_name = req_distinguished_name
+x509_extensions = v3_ca
 
-[dn]
-C = US
-ST = State
-L = City
-O = Organization
-OU = Organizational Unit
-CN = YourCommonName
+[req_distinguished_name]
+countryName = Country Name (2 letter code)
+countryName_default = US
+stateOrProvinceName = State or Province Name (full name)
+stateOrProvinceName_default = California
+localityName = Locality Name (eg, city)
+localityName_default = San Francisco
+organizationName = Organization Name (eg, company)
+organizationName_default = My Company
+commonName = Common Name (e.g. server FQDN or YOUR name)
+commonName_max = 64
 
-[req_ext]
-subjectAltName = @alt_names
+[v3_ca]
+# Basic Constraints for CA
+basicConstraints = CA:TRUE
 
-[alt_names]
-DNS.1 = example.com
+# Signature Algorithm - RSASSA-PSS
+# PSS signature scheme settings
+[ v3_req ]
+basicConstraints = CA:FALSE
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment
 
-[ca]
-default_ca = CA_default
-
-[CA_default]
-default_md = sha256
-
-[usr_cert]
-hash_algo = sha256
-sigalg = rsa_pss
-EOF
+openssl x509 -req -in csr.pem -signkey private_key.pem -out cert.pem -days 365 -extfile openssl-pss.cnf -extensions v3_ca -sigopt rsa_padding_mode:pss -sigopt rsa_pss_saltlen:-1
