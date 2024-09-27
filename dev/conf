@@ -1,34 +1,40 @@
-openssl genpkey -algorithm RSA-PSS -out private_key.pem \
--pkeyopt rsa_keygen_bits:2048 \
--pkeyopt rsa_pss_keygen_saltlen:-1
+#!/bin/bash
 
+# Define variables
+KEY_FILE="private_key.pem"
+CSR_FILE="csr.pem"
+CONFIG_FILE="openssl-pss.cnf"
 
-[req]
-distinguished_name = req_distinguished_name
-default_md = sha256
-string_mask = utf8only
+# Create OpenSSL configuration file
+cat <<EOL > $CONFIG_FILE
+[ req ]
+default_bits        = 2048
+distinguished_name  = req_distinguished_name
+req_extensions      = v3_req
+prompt              = no
 
-[req_distinguished_name]
-countryName = Country Name (2 letter code)
-countryName_default = US
-stateOrProvinceName = State or Province Name (full name)
-stateOrProvinceName_default = California
-localityName = Locality Name (eg, city)
-localityName_default = San Francisco
-organizationName = Organization Name (eg, company)
-organizationName_default = My Company
-commonName = Common Name (eg, YOUR name)
-commonName_max = 64
+[ req_distinguished_name ]
+C  = US
+ST = California
+L  = San Francisco
+O  = My Company
+CN = mydomain.com
 
-[v3_req]
-# Specify basic constraints
+[ v3_req ]
 basicConstraints = CA:FALSE
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+extendedKeyUsage = serverAuth
+EOL
 
-[pss]
-# Specify RSASSA-PSS signature scheme for CSR
-rsa_padding_mode = pss
-rsa_pss_saltlen = -1
-hashAlgorithm = sha256
+# Generate RSA Private Key with RSASSA-PSS
+openssl genpkey -algorithm RSA -out $KEY_FILE -pkeyopt rsa_keygen_bits:2048
 
+# Generate the CSR with RSASSA-PSS signature
+openssl req -new -key $KEY_FILE -out $CSR_FILE -config $CONFIG_FILE \
+-sigopt rsa_padding_mode:pss \
+-sigopt rsa_pss_saltlen:-1
 
-openssl req -new -key private_key.pem -out csr.pem -config openssl-pss.cnf -sigopt rsa_padding_mode:pss -sigopt rsa_pss_saltlen:-1
+# Verify the generated CSR
+openssl req -in $CSR_FILE -text -noout
+
+echo "CSR generated successfully: $CSR_FILE"
