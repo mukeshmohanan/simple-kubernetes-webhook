@@ -8,3 +8,8 @@ web_custom_request("GetToken",
         "EncType=application/x-www-form-urlencoded",  // Form data encoding
         "Body=client_id=your_client_id&client_secret=your_client_secret&grant_type=client_credentials", // Replace values with actual client ID and secret
         LAST);
+web_reg_save_param("access_token",
+    "LB=\"access_token\":\"",  // Left Boundary for the token
+    "RB=\"",                   // Right Boundary for the token
+    "NotFound=warning",        // Warning if not found
+    LAST);
