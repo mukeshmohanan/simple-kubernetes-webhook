@@ -1,1 +1,51 @@
+#include "lrun.h"
+#include "SharedParameter.h"
+#include "globals.h"
+#include "web_api.h"
+
+Action()
+{
+    // Declare variables to store client credentials
+    char *client_id = "your_client_id";        // Replace with your actual client_id
+    char *client_secret = "your_client_secret"; // Replace with your actual client_secret
+    char *token_endpoint = "https://eidp.example.com/oauth2/token"; // Replace with your actual token endpoint
+
+    // Start the transaction to get the access token
+    lr_start_transaction("Get_OAuth_Token");
+
+    // Add headers for the token request
+    web_add_auto_header("Content-Type", "application/x-www-form-urlencoded");
+    web_add_auto_header("Accept", "application/json");
+
+    // Register a parameter to capture the access token from the response body
+    web_reg_save_param_ex(
+        "ParamName=access_token",
+        "LB=\"access_token\":\"",
+        "RB=\"",
+        "NotFound=warning", // To handle cases where the token is not found
+        LAST);
+
+    // Send the POST request to get the OAuth token
+    web_submit_data("Get_Token",
+        token_endpoint,           // URL of the token endpoint
+        "Method=POST",            // Use POST method
+        "RecContentType=application/json",  // Expecting JSON response
+        "Mode=HTML",              // Mode for rendering
+        ITEMDATA,
+        "Name=client_id", client_id, ENDITEM,     // Pass client_id
+        "Name=client_secret", client_secret, ENDITEM, // Pass client_secret
+        "Name=grant_type", "client_credentials", ENDITEM, // Set grant type to client_credentials
+        LAST);
+
+    // End the transaction and check the result
+    if (strcmp(lr_eval_string("{access_token}"), "") != 0) {
+        lr_end_transaction("Get_OAuth_Token", LR_PASS);
+        lr_output_message("Access Token: %s", lr_eval_string("{access_token}"));
+    } else {
+        lr_end_transaction("Get_OAuth_Token", LR_FAIL);
+        lr_error_message("Failed to retrieve access token.");
+    }
+
+    return 0;
+}
 
