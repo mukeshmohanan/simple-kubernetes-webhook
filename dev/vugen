@@ -13,3 +13,5 @@ web_reg_save_param("access_token",
     "RB=\"",                   // Right Boundary for the token
     "NotFound=warning",        // Warning if not found
     LAST);
+
+https://github.com/hashicorp/terraform-provider-google/blob/main/google/services/privateca/resource_privateca_certificate_authority.go
