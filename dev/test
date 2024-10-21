@@ -1,1 +1,13 @@
-String cleanPem = pemString.replaceAll("[^A-Za-z0-9+/=\\n\\r-]", "");
+# Hex string from SQL Server (without the '0x' prefix)
+$hexString = "3082...3c781"
+
+# Convert hex string to byte array (binary)
+$certBytes = for ($i = 0; $i -lt $hexString.Length; $i += 2) { 
+    [Convert]::ToByte($hexString.Substring($i, 2), 16) 
+}
+
+# Save binary data (DER format) to a .der file
+[System.IO.File]::WriteAllBytes("certificate.der", $certBytes)
+
+# Convert the DER certificate to PEM format using OpenSSL
+# You could also convert it directly inside PowerShell if you have OpenSSL installed, or use it afterward as explained earlier
