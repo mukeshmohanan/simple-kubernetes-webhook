@@ -1,0 +1,30 @@
+Google Cloud Attestation (GCA) – Current Capabilities, Gaps, and Validation Approach
+1. Attestation Process & Limitations
+
+Remote attestation using full attestation reports is an on-demand process, initiated by the user or application, and does not occur automatically upon each VM launch.
+To validate each VM's attestation, reports must be manually generated and verified using specific tools against Key Distribution Services (KDS) and certificates (Intel/AMD).
+Google does not provide visibility into the signature validation of attestation reports, nor is there any evidence that such validation is logged within the VM.
+2. Gaps in Google Cloud Attestation (GCA)
+
+Lack of Support for SEV-SNP & Limited TDX Support:
+Google Cloud Attestation does not support Confidential VMs (CVMs) running on SEV-SNP.
+Intel TDX support is limited and does not provide full attestation capabilities.
+Implicit Trust in Google Remains Unaddressed:
+Leveraging GCA as a verifier does not eliminate implicit trust in Google, particularly in Untrusted Data Execution (UDE) contexts.
+3. Fortanix UDE Proxy – Verification Mechanism
+
+The Fortanix UDE Proxy acts as a relying party, validating attestation reports via a well-known Google endpoint to retrieve an attestation token.
+Further validation is required to determine:
+How Fortanix verifies attestation reports for SEV-SNP and Intel TDX.
+Whether Fortanix's verification mechanism reduces reliance on Google's attestation model.
+4. Next Steps & Validation Approach
+
+Clarify Google’s Attestation Roadmap:
+Confirm future plans for SEV-SNP and Intel TDX support in GCA.
+Assess feasibility of exposing signature validation logs for greater transparency.
+Engage with Fortanix for Detailed Verification Insights:
+Validate Fortanix’s attestation model for SEV-SNP and TDX.
+Determine if their approach can provide an independent attestation framework beyond Google Cloud.
+Explore Alternative Verification Strategies:
+Assess third-party attestation solutions that enable independent validation outside Google’s ecosystem.
+Investigate the integration of KDS-based validation within attestation workflows.
